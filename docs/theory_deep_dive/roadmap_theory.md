@@ -17,12 +17,14 @@ graph TD
     T2 --> T3[Bài 3: Attention trên CPU]
     T3 --> T4[Bài 4: KV Cache Quantization]
     T4 --> T5[Bài 5: Perplexity & Evaluation]
+    T1 --> T6[Bài 6: Quantization Landscape]
 
     style T1 fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff
     style T2 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
     style T3 fill:#92400e,stroke:#f59e0b,stroke-width:2px,color:#fff
     style T4 fill:#9d174d,stroke:#ec4899,stroke-width:2px,color:#fff
     style T5 fill:#5b21b6,stroke:#8b5cf6,stroke-width:2px,color:#fff
+    style T6 fill:#dc2626,stroke:#ef4444,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -39,3 +41,5 @@ graph TD
    * Memory footprint math, Type-0 vs Type-1, attention quality under quantization.
 5. **[Bài 5: Perplexity & Evaluation Metrics](theory_5_perplexity_evaluation)**
    * Cross-entropy, PPL formula, benchmark methodology, statistical testing.
+6. **[Bài 6: Cảnh giác Quantization - GGML vs GPTQ vs AWQ vs QAT](theory_6_quantization_landscape)**
+   * Hessian-based OBQ, activation-aware scaling, STE, PTQ vs QAT paradigm comparison.

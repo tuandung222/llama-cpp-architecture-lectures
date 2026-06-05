@@ -266,6 +266,38 @@ python convert_hf_to_gguf.py /path/to/model --outfile model-f16.gguf
 
 ---
 
+## 8. GGML Quantization trong bối cảnh rộng hơn: GPTQ, AWQ, QAT
+
+Hệ thống quantization của llama.cpp không tồn tại trong chân không. Có 3 trường phái quantization chính khác mà bạn sẽ gặp trong thực tế:
+
+| Phương pháp | Tác giả | Loại | Hardware | Calibration? | Điểm mạnh |
+|:---|:---|:---|:---|:---|:---|
+| **GPTQ** | Frantar et al., ICLR 2023 | PTQ (Hessian) | GPU CUDA | Có (128-2048 tokens) | Chạy 175B trên 1 GPU 24GB |
+| **AWQ** | Lin et al., MLSys 2024 | PTQ (Activation-aware) | GPU CUDA | Có (~512 tokens) | Nhanh, chất lượng tốt ở 3-4 bit |
+| **QAT/LSQ** | Esser et al., ICLR 2020 | Training-based | Any | Full dataset | Chất lượng cao nhất, đắt nhất |
+| **GGML** | Gerganov et al. | PTQ (Block-based) | CPU SIMD | Không (trừ I-quants) | No GPU needed, single file GGUF |
+
+### So sánh nhanh chất lượng 4-bit (LLaMA-7B, WikiText-2)
+
+| Phương pháp | PPL | Quantize time |
+|:---|:---|:---|
+| FP16 (baseline) | 5.91 | - |
+| GPTQ w4a16g128 | 6.01 | ~10 phút (GPU) |
+| AWQ w4a16g128 | 5.97 | ~5 phút (GPU) |
+| GGML Q4_K_M | 5.97 | ~1 phút (CPU) |
+| GGML IQ4_NL | 5.94 | ~30 phút (CPU + imatrix) |
+| QAT 4-bit (LSQ) | 5.93 | Vài giờ (retrain) |
+
+**Nhận xét quan trọng**: GGML Q4_K_M đạt chất lượng **tương đương AWQ 4-bit** mà không cần GPU hay calibration data. Đây là lý do llama.cpp trở thành framework inference phổ biến nhất trong cộng đồng open-source.
+
+### Compatibility
+
+Models GPTQ/AWQ **không dùng trực tiếp được** với llama.cpp vì khác format (Safetensors vs GGUF), khác quantization scheme (per-group 128 vs block 32), và khác kernel (CUDA vs SIMD). Nếu cần CPU inference, nên quantize từ FP16/BF16 bằng `llama-quantize` ra GGUF.
+
+> **Phân tích chi tiết**: Xem [Theory 6: Cảnh giác Quantization](theory_deep_dive/theory_6_quantization_landscape.md) để đi sâu vào thuật toán Hessian của GPTQ, activation-aware scaling của AWQ, và Straight-Through Estimator của QAT.
+
+---
+
 ## 💡 Đúc kết Bài 3
 
 Hệ thống quantization của llama.cpp là **phong phú nhất** trong các framework inference, với hơn 30 loại quantization trải qua 3 thế hệ:
@@ -274,4 +306,4 @@ Hệ thống quantization của llama.cpp là **phong phú nhất** trong các f
 2. **K-quants** (Q2_K-Q8_K): Super-blocks, chất lượng vượt trội cùng bits.
 3. **I-quants** (IQ2-IQ4): Importance-based, tối ưu bit allocation bằng calibration data.
 
-**Q4_K_M** là lựa chọn mặc định cho hầu hết use cases, cân bằng hoàn hảo giữa kích thước, tốc độ và chất lượng.
+So với GPTQ/AWQ (GPU-optimized) và QAT (training-based), GGML quantization có lợi thế riêng: **không cần GPU, không cần calibration, single-file format, tối ưu SIMD cho CPU**. Q4_K_M vẫn là lựa chọn mặc định cho hầu hết use cases, cân bằng hoàn hảo giữa kích thước, tốc độ và chất lượng.
