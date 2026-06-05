@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+venv/
+.idea/
+.vscode/
+
+# Docusaurus / Node
+node_modules/
+.docusaurus/
+build/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
