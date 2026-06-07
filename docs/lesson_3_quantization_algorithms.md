@@ -103,14 +103,17 @@ K-quants (giới thiệu bởi Iwan Kawrakow) là bước đột phá về chấ
 
 ```
 Super-block Q4_K (256 values):
-├── d (F16)           : Global scale
-├── dmin (F16)        : Global minimum scale
-├── scales[12]        : 12 bytes chứa 8 sub-block scales (6-bit mỗi cái)
-├── mins[12]          : (shared với scales) 8 sub-block mins (6-bit mỗi cái)
+├── d (F16)           : Global scale cho quantized scales
+├── dmin (F16)        : Global scale cho quantized mins
+├── scales[12]        : 12 bytes chứa CẢ scales và mins (6-bit mỗi cái, packed xen kẽ)
+│   ├── 8 sub-block scales (6-bit each, packed trong 6 bytes đầu)
+│   └── 8 sub-block mins (6-bit each, packed trong 6 bytes sau)
 └── qs[128]           : 256 giá trị 4-bit (128 bytes)
 ```
 
 Tổng: 2 + 2 + 12 + 128 = **144 bytes** cho 256 giá trị = **4.50 bits/trọng số**.
+
+> **Lưu ý**: Trong mã nguồn (`ggml-common.h`), struct `block_q4_K` khai báo `uint8_t scales[K_SCALE_SIZE]` với `K_SCALE_SIZE = 12`. Mảng 12 bytes này chứa **cả** scales lẫn mins được pack xen kẽ bằng 6-bit, không phải là hai mảng riêng biệt. Đây là điểm thường bị hiểu nhầm.
 
 ### 3.2. Tại sao K-quants tốt hơn Basic Quants?
 

@@ -122,6 +122,7 @@ A reader should finish this curriculum able to explain:
 - The model porting pipeline: architecture registry, weight name mapping, and convert_hf_to_gguf.py.
 - How hardware backends (CPU, CUDA, Metal, Vulkan) are abstracted via ggml-backend.
 - Speculative decoding mechanics and LoRA adapter integration in GGUF format.
+- How BitNet b1.58 ternary weights {-1, 0, +1} enable addition-only matmul, and how bitnet.cpp kernel library (I2_S, TL1, TL2) achieves 1.7x-6.17x speedup over llama.cpp for ternary models.
 
 ### Misconceptions to actively prevent
 - GGML is not a model format; it is a tensor computation library. GGUF is the format.
@@ -130,3 +131,5 @@ A reader should finish this curriculum able to explain:
 - KV Cache is not free; it often exceeds model size for long contexts and must be quantized or managed.
 - Speculative decoding does not change output distribution; it is a lossless speedup technique.
 - LoRA adapters in llama.cpp do not require merging; they can be loaded separately with scaling control.
+- BitNet b1.58 is NOT a post-training quantization method; it requires training from scratch with QAT/STE. You cannot quantize an existing FP16 model into BitNet format.
+- llama.cpp TQ1_0/TQ2_0 ternary quants achieve only 1.4% accuracy because they dequantize to float; bitnet.cpp achieves 100% accuracy by computing directly in the ternary domain.

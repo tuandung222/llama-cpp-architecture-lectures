@@ -93,13 +93,13 @@ Output: file `imatrix.dat` chứa importance scores cho mỗi weight tensor.
 # Default Q4_K_M
 ./llama-quantize model-f16.gguf model-q4_k_m.gguf Q4_K_M
 
-# Imatrix Q4_K_M
+# Imatrix IQ4_XS
 ./llama-quantize --imatrix imatrix.dat \
-    model-f16.gguf model-iq4_k_m.gguf IQ4_K_M
+    model-f16.gguf model-iq4_xs.gguf IQ4_XS
 
 # So sánh perplexity
 ./llama-perplexity -m model-q4_k_m.gguf -f wikitext.txt -c 512
-./llama-perplexity -m model-iq4_k_m.gguf -f wikitext.txt -c 512
+./llama-perplexity -m model-iq4_xs.gguf -f wikitext.txt -c 512
 ```
 
 ### Kết quả kỳ vọng
@@ -108,7 +108,7 @@ Output: file `imatrix.dat` chứa importance scores cho mỗi weight tensor.
 |:---|:---|:---|
 | FP16 (baseline) | 5.82 | 100% |
 | Q4_K_M (default) | 6.25 | ~30% |
-| IQ4_K_M (imatrix) | 6.10 | ~30% |
+| IQ4_XS (imatrix) | 6.10 | ~30% |
 | Q8_0 (default) | 5.87 | ~50% |
 
 Imatrix quant cải thiện PPL khoảng 0.1-0.3 điểm so với default quant cùng kích thước, đặc biệt rõ rệt ở các quant thấp (2-4 bit).

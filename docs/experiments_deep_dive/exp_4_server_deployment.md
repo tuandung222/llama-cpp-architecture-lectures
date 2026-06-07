@@ -218,15 +218,30 @@ llama-server expose metrics tại `/metrics` endpoint (Prometheus format):
 curl http://localhost:8080/metrics
 ```
 
-Output mẫu:
+Output mẫu (dựa trên mã nguồn `server-context.cpp`):
 
 ```
-llama_requests_total{method="POST",path="/v1/chat/completions"} 1523
-llama_tokens_generated_total 284571
-llama_prompt_processing_seconds_sum 45.23
-llama_generation_seconds_sum 312.45
-llama_kv_cache_usage_percent 0.67
+# HELP llamacpp:prompt_tokens_total Number of prompt tokens processed.
+# TYPE llamacpp:prompt_tokens_total counter
+llamacpp:prompt_tokens_total 15234
+# HELP llamacpp:tokens_predicted_total Number of generation tokens processed.
+# TYPE llamacpp:tokens_predicted_total counter
+llamacpp:tokens_predicted_total 284571
+# HELP llamacpp:prompt_tokens_seconds Average prompt throughput in tokens/s.
+# TYPE llamacpp:prompt_tokens_seconds gauge
+llamacpp:prompt_tokens_seconds 452.3
+# HELP llamacpp:predicted_tokens_seconds Average generation throughput in tokens/s.
+# TYPE llamacpp:predicted_tokens_seconds gauge
+llamacpp:predicted_tokens_seconds 312.4
+# HELP llamacpp:requests_processing Number of requests processing.
+# TYPE llamacpp:requests_processing gauge
+llamacpp:requests_processing 3
+# HELP llamacpp:requests_deferred Number of requests deferred.
+# TYPE llamacpp:requests_deferred gauge
+llamacpp:requests_deferred 0
 ```
+
+> **Lưu ý**: Tên metric thực tế có prefix `llamacpp:` (dấu hai chấm, không phải dấu gạch dướii). Đây là format chuẩn của Prometheus text exposition (theo mã nguồn `server-context.cpp`).
 
 ### Grafana Dashboard
 
@@ -240,10 +255,12 @@ scrape_configs:
 ```
 
 Metrics quan trọng cần theo dõi:
-- `llama_requests_total`: tổng request count.
-- `llama_kv_cache_usage_percent`: KV Cache utilization (alert > 90%).
-- `llama_generation_seconds`: latency P50/P95/P99.
-- `llama_tokens_generated_total`: throughput theo thời gian.
+- `llamacpp:prompt_tokens_total`: tổng prompt token count (counter).
+- `llamacpp:tokens_predicted_total`: tổng generation token count (counter).
+- `llamacpp:prompt_tokens_seconds`: prompt throughput (gauge).
+- `llamacpp:predicted_tokens_seconds`: generation throughput (gauge).
+- `llamacpp:requests_processing`: số request đang xử lý (gauge).
+- `llamacpp:requests_deferred`: số request bị hoãn (gauge).
 
 ---
 

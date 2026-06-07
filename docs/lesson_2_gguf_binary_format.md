@@ -39,7 +39,7 @@ graph TD
     style TD fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff
 ```
 
-### 2.1. Header (16 bytes cố định)
+### 2.1. Header (24 bytes cố định)
 
 ```
 Offset  Size   Field          Value

@@ -82,7 +82,7 @@ const Lectures: LectureItem[] = [
   {
     number: 'Bài 1',
     title: 'GGML: Thư viện Tensor bằng C không phụ thuộc',
-    desc: 'Phân tích cấu trúc ggml_tensor, hệ thống 39 kiểu dữ liệu, arena memory allocation, computation graph và tối ưu SIMD cho inference.',
+    desc: 'Phân tích cấu trúc ggml_tensor, hệ thống 35 kiểu dữ liệu, arena memory allocation, computation graph và tối ưu SIMD cho inference.',
     path: '/docs/lesson_1_ggml_tensor_library',
     category: 'Core Theory'
   },
@@ -141,6 +141,13 @@ const Lectures: LectureItem[] = [
     desc: 'Tự tay lập trình GGUF file reader bằng Python, implement Q8_0 quantization/dequantization, so sánh chất lượng với FP16 gốc.',
     path: '/docs/lesson_9_hands_on_gguf',
     category: 'Practice'
+  },
+  {
+    number: 'Bài 10',
+    title: 'BitNet b1.58 & bitnet.cpp: Inference cho LLM Ternary',
+    desc: 'Kiến trúc BitNet b1.58, BitLinear layer, addition-only matmul, kernel library (I2_S, TL1, TL2), so sánh với llama.cpp.',
+    path: '/docs/lesson_10_bitnet_cpp',
+    category: 'Deep Dive Code'
   }
 ];
 

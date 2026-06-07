@@ -17,6 +17,8 @@ $$nb[0] = \text{type\_size}(T)$$
 $$nb[1] = nb[0] \times \frac{ne[0]}{\text{block\_size}(T)} + \text{padding}$$
 $$nb[i] = nb[i-1] \times ne[i-1] \quad \text{for } i \geq 2$$
 
+> **Lưu ý**: Với các kiểu quantization chuẩn (Q4_0, Q8_0, F32...), `padding = 0` vì `type_size` đã bao gồm đúng kích thước block. Padding chỉ khác 0 trong một số trường hợp đặc biệt cần alignment bổ sung.
+
 **Ví dụ**: Tensor F32 có shape [4096, 4096]:
 - $nb[0] = 4$ bytes (sizeof(float))
 - $nb[1] = 4 \times 4096 = 16384$ bytes
