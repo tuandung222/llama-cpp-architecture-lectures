@@ -19,6 +19,7 @@ graph TD
     T4 --> T5[Bài 5: Perplexity & Evaluation]
     T1 --> T6[Bài 6: Quantization Landscape]
     T1 --> T7[Bài 7: Ternary Quantization & BitNet]
+    T6 --> T8[Bài 8: QAT vs PTQ Convergence]
 
     style T1 fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff
     style T2 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
@@ -27,6 +28,7 @@ graph TD
     style T5 fill:#5b21b6,stroke:#8b5cf6,stroke-width:2px,color:#fff
     style T6 fill:#dc2626,stroke:#ef4444,stroke-width:2px,color:#fff
     style T7 fill:#059669,stroke:#10b981,stroke-width:2px,color:#fff
+    style T8 fill:#7c3aed,stroke:#8b5cf6,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -46,4 +48,6 @@ graph TD
 6. **[Bài 6: Cảnh giác Quantization - GGML vs GPTQ vs AWQ vs QAT](theory_6_quantization_landscape)**
    * Hessian-based OBQ, activation-aware scaling, STE, PTQ vs QAT paradigm comparison.
 7. **[Bài 7: Toán học Ternary Quantization & BitNet b1.58](theory_7_ternary_quantization)**
-   * Information theory log₂(3), absmean quantization, addition-only matmul, scale absorption, STE, LUT mpGEMM.
+   * Information theory log2(3), absmean quantization, addition-only matmul, scale absorption, STE, LUT mpGEMM.
+8. **[Bài 8: Tại sao QAT Model chạy được trên PTQ Engine?](theory_8_qat_ptq_convergence)**
+   * Phân biệt training method vs storage format vs inference engine. Pipeline BitNet QAT -> GGUF -> llama.cpp. Accuracy gap 1.4% vs 100%.
