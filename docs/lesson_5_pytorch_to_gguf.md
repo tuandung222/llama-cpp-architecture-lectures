@@ -11,7 +11,7 @@ Một trong những câu hỏi phổ biến nhất từ cộng đồng llama.cpp
 
 ## 1. Hệ thống Architecture Registry
 
-llama.cpp hỗ trợ **80+ kiến trúc mô hình** (Llama, Mistral, Phi, Qwen, Gemma, Command-R, ...). Mỗi kiến trúc được đăng ký trong `llama-arch.cpp` thông qua một hệ thống registry:
+llama.cpp hỗ trợ **hơn 130 kiến trúc mô hình** (Llama, Mistral, Phi, Qwen, Gemma, Command-R, ...). Mỗi kiến trúc được đăng ký trong `llama-arch.h` thông qua một hệ thống registry:
 
 ```cpp
 // Trong llama-arch.cpp: Định nghĩa enum cho mỗi architecture
@@ -248,4 +248,4 @@ Porting model sang llama.cpp không phải là "viết lại model" mà là **á
 2. **Hyperparameter parsing**: Đọc architecture-specific config từ GGUF metadata.
 3. **Graph builder**: Xây dựng computation graph cho forward pass.
 
-File `convert_hf_to_gguf.py` (~248KB, hơn 6000 dòng) là công cụ chính cho quá trình conversion, với class riêng cho mỗi architecture.
+File `convert_hf_to_gguf.py` là entry point, với logic conversion được chia nhỏ trong thư mục `conversion/` (hơn 15,000 dòng, 900KB, một file riêng cho mỗi architecture) là công cụ chính cho quá trình conversion, với class riêng cho mỗi architecture.

@@ -11,7 +11,7 @@ llama.cpp không chỉ là một CLI tool. Nó cung cấp một **HTTP server** 
 
 ## 1. llama-server: OpenAI-Compatible API
 
-`llama-server` (trong `examples/server/`) cung cấp REST API tương thích với OpenAI API:
+`llama-server` (trong `tools/server/`) cung cấp REST API tương thích với OpenAI API:
 
 ```bash
 # Khởi động server
@@ -29,11 +29,23 @@ llama.cpp không chỉ là một CLI tool. Nó cung cấp một **HTTP server** 
 | Endpoint | Method | Mô tả |
 |:---|:---|:---|
 | `/v1/chat/completions` | POST | Chat completion (tương thích OpenAI) |
-| `/v1/completions` | POST | Text completion |
-| `/v1/embeddings` | POST | Generate embeddings |
-| `/health` | GET | Health check |
+| `/v1/completions` | POST | Text completion (OAI format) |
+| `/completions` | POST | Text completion (native) |
+| `/v1/embeddings` | POST | Generate embeddings (OAI format) |
+| `/embeddings` | POST | Generate embeddings (native) |
+| `/v1/responses` | POST | Responses API (OAI format) |
+| `/v1/messages` | POST | Anthropic Messages API |
+| `/v1/audio/transcriptions` | POST | Audio transcription (whisper) |
+| `/completion` | POST | Text completion (legacy) |
+| `/infill` | POST | Code infill (FIM) |
+| `/rerank`, `/v1/rerank` | POST | Reranking |
+| `/tokenize`, `/detokenize` | POST | Tokenizer access |
+| `/health`, `/v1/health` | GET | Health check |
 | `/metrics` | GET | Prometheus metrics |
-| `/props` | GET | Server properties |
+| `/props` | GET/POST | Server properties |
+| `/models`, `/v1/models` | GET | List loaded models |
+| `/lora-adapters` | GET/POST | LoRA hotswap |
+| `/slots` | GET/POST | KV Cache slot management |
 
 ### 1.2. Chat Completion Example
 
@@ -83,7 +95,7 @@ llama.cpp hỗ trợ generate embeddings cho semantic search và retrieval:
 ./llama-embedding -m model.gguf -p "Câu văn cần embed" --pooling mean
 ```
 
-Pooling strategies: `mean`, `cls`, `last`, `rank`.
+Pooling strategies: `none`, `mean`, `cls`, `last`, `rank` (verified: `common/arg.cpp` line 1928).
 
 ---
 
@@ -104,13 +116,18 @@ graph TD
 
 ```bash
 # Speculative decoding: draft model + target model
+# Verified flags from common/arg.cpp:
+#   --spec-draft-model (hoặc -md, --model-draft): draft model path
+#   --spec-draft-n-max N: số tokens draft (thay cho --draft đã bị xóa)
 ./llama-speculative \
     -m target-7b.gguf \
-    -md draft-1b.gguf \
-    --draft 5 \
+    --spec-draft-model draft-1b.gguf \
+    --spec-draft-n-max 5 \
     -p "Hello world" \
     -n 100
 ```
+
+> **Lưu ý**: Flag `--draft N` đã bị xóa và thay bằng `--spec-draft-n-max N` (verified: `common/arg.cpp` line 3785). `-md` vẫn hoạt động như alias của `--spec-draft-model`.
 
 Lợi ích: **2-3x speedup** khi acceptance rate cao (>70%).
 

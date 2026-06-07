@@ -43,16 +43,22 @@ Inference diễn ra qua hai giai đoạn:
 `llama_context` là đối tượng trung tâm quản lý trạng thái inference. Được tạo từ `llama_model` và `llama_context_params`:
 
 ```c
+// n_gpu_layers thuộc llama_model_params, KHÔNG phải llama_context_params
+struct llama_model_params mparams = llama_model_default_params();
+mparams.n_gpu_layers = 33;     // Số layers offload lên GPU (-1 = tất cả)
+
 struct llama_context_params params = llama_context_default_params();
 params.n_ctx      = 4096;     // Context window size
 params.n_batch    = 2048;     // Max tokens per batch (prefill)
 params.n_threads  = 8;        // CPU threads cho inference
-params.n_gpu_layers = 33;     // Số layers offload lên GPU (-1 = tất cả)
 params.type_k     = GGML_TYPE_F16;  // KV Cache key type
 params.type_v     = GGML_TYPE_F16;  // KV Cache value type
 
+struct llama_model * model = llama_load_model_from_file("model.gguf", mparams);
 struct llama_context * ctx = llama_init_from_model(model, params);
 ```
+
+> **Lưu ý**: `n_gpu_layers` nằm trong `llama_model_params` (verified: `include/llama.h` line 298), vì GPU offload được quyết định khi load model. `llama_context_params` chỉ chứa các tham số runtime.
 
 `llama_context` quản lý:
 - **KV Cache**: Lưu trữ key/value vectors cho tất cả previous tokens.
@@ -141,7 +147,9 @@ llama_sampler_chain_add(sampler, llama_sampler_init_min_p(0.05f, 1));
 llama.cpp kết hợp nhiều samplers thành một chuỗi:
 
 ```c
-struct llama_sampler * sampler = llama_sampler_chain_init();
+// llama_sampler_chain_init() cần llama_sampler_chain_params (verified: llama.h line 1298)
+struct llama_sampler_chain_params sparams = llama_sampler_chain_default_params();
+struct llama_sampler * sampler = llama_sampler_chain_init(sparams);
 llama_sampler_chain_add(sampler, llama_sampler_init_penalties(64, 1.1f, 0.0f, 0.0f));
 llama_sampler_chain_add(sampler, llama_sampler_init_top_k(40));
 llama_sampler_chain_add(sampler, llama_sampler_init_top_p(0.95f, 1));
@@ -157,10 +165,14 @@ llama.cpp hỗ trợ xử lý nhiều tokens cùng lúc qua `llama_batch`:
 
 ```c
 // Tạo batch cho prefill (toàn bộ prompt tokens)
-struct llama_batch batch = llama_batch_get_init(prompt_tokens, n_prompt_tokens, 0);
+// API đúng: llama_batch_init(n_tokens, embd, n_seq_max) (verified: llama.h line 928)
+// Lưu ý: KHÔNG có hàm llama_batch_get_init()
+struct llama_batch batch = llama_batch_init(n_prompt_tokens, 0, 1);
+// ... set tokens vào batch ...
 
 // Prefill: xử lý toàn bộ prompt cùng lúc
 llama_decode(ctx, batch);
+llama_batch_free(batch);
 
 // Decode: từng token một
 for (int i = 0; i < max_tokens; i++) {
@@ -174,7 +186,7 @@ for (int i = 0; i < max_tokens; i++) {
 
 ## 6. Graph Building
 
-Mỗi kiến trúc mô hình (Llama, Mistral, Phi, ...) có một **graph builder** riêng trong `llama-graph.cpp`. Graph builder xây dựng computation graph cho một forward pass:
+Mỗi kiến trúc mô hình (Llama, Mistral, Phi, ...) có một **graph builder** riêng trong thư mục `src/models/` (ví dụ: `src/models/llama.cpp`, `src/models/phi.cpp`, `src/models/qwen2.cpp`). Graph builder xây dựng computation graph cho một forward pass. Header `llama-graph.h` cung cấp các helper functions chung.
 
 ```
 Layer i computation graph:
