@@ -148,6 +148,20 @@ const Lectures: LectureItem[] = [
     desc: 'Kiến trúc BitNet b1.58, BitLinear layer, addition-only matmul, kernel library (I2_S, TL1, TL2), so sánh với llama.cpp.',
     path: '/docs/lesson_10_bitnet_cpp',
     category: 'Deep Dive Code'
+  },
+  {
+    number: 'Bài 11',
+    title: 'Họ mô hình Bonsai (PrismML): 1-bit, Ternary và Bonsai 2',
+    desc: 'Bonsai 1 với Q1_0 và PQ2_0, Bonsai 27B hybrid attention, Bonsai 2 với cơ sở xoay Hadamard. Phân tích roofline: khi nào bpw thấp hơn không còn nhanh hơn.',
+    path: '/docs/lesson_11_bonsai_model_family',
+    category: 'Deep Dive Code'
+  },
+  {
+    number: 'Bài 12',
+    title: 'Prism llama.cpp: Fork của PrismML khác mainline thế nào',
+    desc: 'Những gì đã upstream (Q1_0, Q2_0, runtime Hadamard) và những gì chỉ có trong fork (PQ2_0, PTQ1_0, kernel đa backend, K-cache mean-centering, rollback GDN).',
+    path: '/docs/lesson_12_prism_llama_cpp_fork',
+    category: 'Deep Dive Code'
   }
 ];
 

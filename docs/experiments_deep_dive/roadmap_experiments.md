@@ -28,13 +28,18 @@ Mỗi bài thực nghiệm được thiết kế như một lab hoàn chỉnh: c
 * **Trọng tâm**: llama-perplexity, wikitext benchmark, so sánh PPL giữa các quant.
 * **Output**: Bảng PPL comparison và khuyến nghị chọn quant.
 
+### [Bài 6: Tự cài đặt codec của Bonsai và kiểm chứng byte-exact với ggml](exp_6_prism_codecs_lab.md)
+* **Trọng tâm**: Q1_0, Q2_0, PQ2_0, PTQ1_0, TQ1_0 bằng numpy; gọi `ggml_quantize_chunk` qua ctypes; fold Hadamard và FWHT.
+* **Output**: Bảng so sánh byte-exact, sai số lossless/lossy, hiệu quả của phép xoay với phân phối đuôi dày.
+
 ---
 
 ## 🎯 Mục tiêu đầu ra
 
-Sau khi hoàn thành 5 bài thực nghiệm, học viên có khả năng:
+Sau khi hoàn thành 6 bài thực nghiệm, học viên có khả năng:
 1. Build llama.cpp từ source trên bất kỳ platform nào (Linux, macOS, Windows) với GPU backend.
 2. Tạo custom quantization chất lượng cao sử dụng importance matrix.
 3. Thiết kế và chạy benchmark suite toàn diện, phân tích kết quả khoa học.
 4. Deploy llama.cpp server production-ready với Docker và monitoring.
 5. Đánh giá chất lượng quantization bằng perplexity metric và đưa ra khuyến nghị.
+6. Đọc và tái hiện chính xác bố cục bit của các định dạng low-bit mới, kiểm chứng với mã C của ggml.

@@ -20,6 +20,8 @@ graph TD
     T1 --> T6[Bài 6: Quantization Landscape]
     T1 --> T7[Bài 7: Ternary Quantization & BitNet]
     T6 --> T8[Bài 8: QAT vs PTQ Convergence]
+    T7 --> T9[Bài 9: Định dạng GGUF của Bonsai]
+    T9 --> T10[Bài 10: Fold Hadamard & FWHT]
 
     style T1 fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff
     style T2 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
@@ -29,6 +31,8 @@ graph TD
     style T6 fill:#dc2626,stroke:#ef4444,stroke-width:2px,color:#fff
     style T7 fill:#059669,stroke:#10b981,stroke-width:2px,color:#fff
     style T8 fill:#7c3aed,stroke:#8b5cf6,stroke-width:2px,color:#fff
+    style T9 fill:#0f766e,stroke:#14b8a6,stroke-width:2px,color:#fff
+    style T10 fill:#0f766e,stroke:#14b8a6,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -50,4 +54,8 @@ graph TD
 7. **[Bài 7: Toán học Ternary Quantization & BitNet b1.58](theory_7_ternary_quantization)**
    * Information theory log2(3), absmean quantization, addition-only matmul, scale absorption, STE, LUT mpGEMM.
 8. **[Bài 8: Tại sao QAT Model chạy được trên PTQ Engine?](theory_8_qat_ptq_convergence)**
-   * Phân biệt training method vs storage format vs inference engine. Pipeline BitNet QAT -> GGUF -> llama.cpp. Accuracy gap 1.4% vs 100%.
+   * Phân biệt training method vs storage format vs inference engine. Pipeline BitNet QAT -> GGUF -> llama.cpp. Ý nghĩa thật của con số exact-match 1.4% của TQ so với bitnet.cpp.
+9. **[Bài 9: Toán học các định dạng GGUF của Bonsai](theory_9_bonsai_gguf_formats)**
+   * Bố cục byte của Q1_0, Q2_0, PQ2_0, PTQ1_0 so với TQ1_0, TQ2_0; giới hạn thông tin; chứng minh mã hóa cơ số 3 bằng làm tròn lên; điều kiện lossless; gộp độ lệch vào tổng activation trong vec_dot.
+10. **[Bài 10: Fold Hadamard và runtime FWHT](theory_10_hadamard_folding)**
+   * Định lý $W x = W_f \mathbf{H} D x$, ma trận Sylvester, FWHT $O(n \log n)$, `GGML_HINT_SRC0_IS_HADAMARD`, `build_hadamard_input`, embedding latent và tied output, hoán vị value head của Gated DeltaNet, hợp đồng metadata `prism.hadamard.*`.

@@ -123,6 +123,8 @@ A reader should finish this curriculum able to explain:
 - How hardware backends (CPU, CUDA, Metal, Vulkan) are abstracted via ggml-backend.
 - Speculative decoding mechanics and LoRA adapter integration in GGUF format.
 - How BitNet b1.58 ternary weights {-1, 0, +1} enable addition-only matmul, and how bitnet.cpp kernel library (I2_S, TL1, TL2) achieves 1.7x-6.17x speedup over llama.cpp for ternary models.
+- The PrismML Bonsai family (1-bit Q1_0, ternary PQ2_0/Q2_0, Bonsai 2 with a folded Hadamard basis): exact byte layouts of Q1_0, Q2_0, PQ2_0, PTQ1_0 vs TQ1_0/TQ2_0, why base-3 packing uses ceiling division, when each format is lossless, and how the `prism.hadamard.*` contract is enforced by `load_hparams_hadamard` and `build_hadamard_input`.
+- How the PrismML-Eng/llama.cpp fork differs from mainline: what has been upstreamed (Q1_0, Q2_0 group 64, Hadamard runtime, MTP/DFlash/DSpark spec types) and what is fork-only (PQ2_0 = ggml type 142, PTQ1_0 = 143, backend kernels, legacy Q2_0 detection, K-cache mean-centering, GDN rollback).
 
 ### Misconceptions to actively prevent
 - GGML is not a model format; it is a tensor computation library. GGUF is the format.
@@ -131,5 +133,10 @@ A reader should finish this curriculum able to explain:
 - KV Cache is not free; it often exceeds model size for long contexts and must be quantized or managed.
 - Speculative decoding does not change output distribution; it is a lossless speedup technique.
 - LoRA adapters in llama.cpp do not require merging; they can be loaded separately with scaling control.
-- BitNet b1.58 is NOT a post-training quantization method; it requires training from scratch with QAT/STE. You cannot quantize an existing FP16 model into BitNet format.
-- llama.cpp TQ1_0/TQ2_0 ternary quants achieve only 1.4% accuracy because they dequantize to float; bitnet.cpp achieves 100% accuracy by computing directly in the ternary domain.
+- BitNet b1.58 is NOT a post-training quantization method; it requires quantization-aware training with STE, normally from scratch (QAT fine-tuning of a pretrained model, e.g. Llama3-8B-1.58-100B-tokens, also works but loses quality). Simply applying absmean ternarization (or `llama-quantize ... TQ1_0`) to an existing FP16 model does not produce a usable BitNet model.
+- The "1.4% vs 100%" figure (arXiv:2410.16144, Table 7) is NOT task accuracy and is NOT caused by dequantizing to float. It is the fraction of 1,000 WildChat prompts (700M model, up to 100 greedy tokens) whose output matched an FP32 reference token-for-token. llama.cpp `ggml_vec_dot_tq1_0_q8_K`/`ggml_vec_dot_tq2_0_q8_K` already compute integer dot products directly on packed trits; the mismatch comes from the scale scheme (activations quantized to `Q8_K` with one scale per 256 values instead of per-token absmax, FP16 per-block weight scale), whereas bitnet.cpp I2_S/TL1/TL2 reproduce the training-time W1.58A8 quantization exactly.
+- Bonsai is not BitNet: it converts an existing pretrained model (Qwen3, Qwen3.5, Qwen3.6, Qwen3.8) and uses FP16 scales per group of 128, not per-tensor absmean.
+- `llama-quantize` to PQ2_0 or PTQ1_0 does not create a Bonsai model: the reference quantizers are plain absmax rounding and are only lossless for weights that are already ternary at group 128 (and, for Bonsai 2, already in the rotated basis with `prism.hadamard.*` metadata).
+- Lower bpw is not always faster: PTQ1_0 (1.75 bpw) decodes slower than PQ2_0 (2.125 bpw) on H100/A100/Blackwell because batch-1 decode there is limited by unpack arithmetic and launch overhead, not weight bandwidth.
+- Mainline llama.cpp is not the same as an old llama.cpp: a runtime without the Hadamard activation transform loads Bonsai 2 `Q2_0` files silently and produces garbage.
+- ggml type id and llama ftype are different numbering spaces (PQ2_0: ggml type 142, ftype 141; PTQ1_0: 143 and 143).

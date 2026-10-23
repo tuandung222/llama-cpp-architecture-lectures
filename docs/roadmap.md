@@ -5,11 +5,11 @@ sidebar_label: "Lộ trình học tập (Roadmap)"
 
 # Lộ trình học tập & Phân tích cấu trúc thư viện llama.cpp
 
-Chào mừng bạn đến với tài liệu phân tích chuyên sâu về kiến trúc và hiện thực của thư viện **llama.cpp**, công cụ suy luận (inference) mô hình ngôn ngữ lớn mã nguồn mở phổ biến nhất thế giới, do Georgi Gerganov khởi xướng và được cộng đồng hơn 700 lập trình viên đóng góp.
+Chào mừng bạn đến với tài liệu phân tích chuyên sâu về kiến trúc và hiện thực của thư viện **llama.cpp**, công cụ suy luận (inference) mô hình ngôn ngữ lớn mã nguồn mở phổ biến nhất thế giới, do Georgi Gerganov khởi xướng và được một cộng đồng đông đảo lập trình viên trên toàn thế giới đóng góp.
 
 Trong bối cảnh các mô hình LLM ngày càng lớn (từ 7B đến 405B tham số), việc triển khai inference hiệu quả trên đa dạng phần cứng (từ CPU laptop, Raspberry Pi, đến cụm GPU datacenter) trở thành một thách thức kỹ thuật then chốt. Thư viện `llama.cpp` ra đời nhằm giải quyết bài toán này bằng cách kết hợp ba đột phá: thư viện tensor GGML tối ưu cho CPU, định dạng GGUF hỗ trợ quantization linh hoạt, và kiến trúc multi-backend trừu tượng hóa phần cứng.
 
-Dưới đây là giáo trình tự học gồm 11 bài học đi từ lý thuyết nền tảng đến chi tiết hiện thực và tối ưu hiệu năng của `llama.cpp`.
+Dưới đây là giáo trình tự học gồm 13 bài học đi từ lý thuyết nền tảng đến chi tiết hiện thực và tối ưu hiệu năng của `llama.cpp`.
 
 ---
 
@@ -25,6 +25,8 @@ graph TD
     L7 --> L8[Bài 8: Performance Tuning & Benchmarking]
     L8 --> L9[Bài 9: Thực hành GGUF Reader & Quantizer]
     L9 --> L10[Bài 10: BitNet b1.58 & bitnet.cpp]
+    L10 --> L11[Bài 11: Họ mô hình Bonsai]
+    L11 --> L12[Bài 12: Prism llama.cpp vs mainline]
 
     style L0 fill:#1d4ed8,stroke:#3b82f6,stroke-width:2px,color:#fff
     style L1 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
@@ -37,11 +39,13 @@ graph TD
     style L8 fill:#9d174d,stroke:#ec4899,stroke-width:2px,color:#fff
     style L9 fill:#5b21b6,stroke:#8b5cf6,stroke-width:2px,color:#fff
     style L10 fill:#92400e,stroke:#f59e0b,stroke-width:2px,color:#fff
+    style L11 fill:#0f766e,stroke:#14b8a6,stroke-width:2px,color:#fff
+    style L12 fill:#0f766e,stroke:#14b8a6,stroke-width:2px,color:#fff
 ```
 
 ---
 
-## Tóm tắt Giáo trình 11 Bài học
+## Tóm tắt Giáo trình 13 Bài học
 
 ### 📌 Phần 1: Kiến thức nền tảng (Background & Foundations)
 * **[Bài 0: llama.cpp và Cuộc cách mạng Inference trên CPU](lesson_0_cpp_inference_revolution)**
@@ -96,3 +100,14 @@ graph TD
   * BitLinear layer: absmean quantization, addition-only matmul, scale absorption.
   * Kernel library: I2_S (MAD), TL1/TL2 (LUT), so sánh với llama.cpp TQ.
   * QAT với STE, performance 1.7x-6.17x, energy 55-82% reduction.
+
+### 📌 Phần 5: Mô hình 1-bit và Ternary thế hệ mới: Bonsai & Prism llama.cpp
+* **[Bài 11: Họ mô hình Bonsai (PrismML): 1-bit, Ternary và Bonsai 2](lesson_11_bonsai_model_family)**
+  * Decode bị chặn bởi băng thông và giới hạn roofline khi bpw quá thấp.
+  * Bonsai 1 (1-bit Q1_0, Ternary PQ2_0/Q2_0), Bonsai 27B hybrid attention, Bonsai 2 với cơ sở xoay Hadamard.
+  * Vì sao PTQ1_0 nhanh hơn trên Ada/L4 nhưng chậm hơn PQ2_0 trên H100/A100.
+* **[Bài 12: Prism llama.cpp: fork của PrismML khác mainline thế nào](lesson_12_prism_llama_cpp_fork)**
+  * Cấu trúc nhánh, khoảng cách commit với mainline, những gì đã được upstream (Q1_0, Q2_0, runtime Hadamard, MTP/DFlash/DSpark).
+  * Phần chỉ có trong fork: PQ2_0, PTQ1_0, kernel đa backend, phát hiện file Q2_0 legacy, K-cache mean-centering, rollback trạng thái GDN.
+
+Đi kèm Phần 5: [Theory 9: Định dạng GGUF của Bonsai](theory_deep_dive/theory_9_bonsai_gguf_formats), [Theory 10: Fold Hadamard & FWHT](theory_deep_dive/theory_10_hadamard_folding), [Case 7: Chạy Bonsai 2 trên mainline và fork](case_studies/case_7_running_bonsai), [Lab 6: Tự cài đặt codec của Bonsai](experiments_deep_dive/exp_6_prism_codecs_lab).

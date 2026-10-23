@@ -5,7 +5,7 @@ sidebar_label: "Lộ trình Case Studies"
 
 # Lộ trình Case Studies Thực chiến với llama.cpp
 
-Chào mừng bạn đến với chương **Case Studies Thực chiến**. Sau khi đã nắm vững lý thuyết cốt lõi (từ Bài 0 đến Bài 9), phần này sẽ đưa bạn vào các kịch bản thực tế khi deploy và tối ưu llama.cpp.
+Chào mừng bạn đến với chương **Case Studies Thực chiến**. Sau khi đã nắm vững lý thuyết cốt lõi (từ Bài 0 đến Bài 12), phần này sẽ đưa bạn vào các kịch bản thực tế khi deploy và tối ưu llama.cpp.
 
 ---
 
@@ -16,6 +16,7 @@ graph TD
     CS3 --> CS4[Case 4: Speculative Decoding]
     CS4 --> CS5[Case 5: LoRA Conversion]
     CS5 --> CS6[Case 6: bitnet.cpp vs llama.cpp]
+    CS6 --> CS7[Case 7: Chạy Bonsai 2 trên mainline và fork Prism]
 
     style CS1 fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff
     style CS2 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
@@ -23,6 +24,7 @@ graph TD
     style CS4 fill:#9d174d,stroke:#ec4899,stroke-width:2px,color:#fff
     style CS5 fill:#5b21b6,stroke:#8b5cf6,stroke-width:2px,color:#fff
     style CS6 fill:#059669,stroke:#10b981,stroke-width:2px,color:#fff
+    style CS7 fill:#0f766e,stroke:#14b8a6,stroke-width:2px,color:#fff
 ```
 
 ---
@@ -34,4 +36,5 @@ graph TD
 3. **[Case 3: Edge Deployment trên Raspberry Pi và Điện thoại](case_3_edge_deployment)** - Tối ưu cho thiết bị giới hạn.
 4. **[Case 4: Speculative Decoding - Tăng tốc 2-3x](case_4_speculative_decoding)** - Draft model + target model strategy.
 5. **[Case 5: Chuyển đổi LoRA Adapter sang GGUF](case_5_lora_conversion)** - Fine-tuned model conversion pipeline.
-6. **[Case 6: bitnet.cpp vs llama.cpp cho Ternary LLM](case_6_bitnet_vs_llamacpp)** - Benchmark performance, accuracy, energy khi chạy ternary model trên cả hai framework.
+6. **[Case 6: bitnet.cpp vs llama.cpp cho Ternary LLM](case_6_bitnet_vs_llamacpp)** - So sánh định dạng, kernel, tốc độ, năng lượng và độ tái lập (exact match) khi chạy ternary model trên cả hai framework.
+7. **[Case 7: Chạy Ternary Bonsai 2 9B trên llama.cpp mainline và fork Prism](case_7_running_bonsai)** - Chọn gói Q2_0/PQ2_0/PTQ1_0, kiểm tra metadata Hadamard, ngân sách bộ nhớ của mô hình hybrid attention, đo throughput, MTP và DFlash 2.
