@@ -15,6 +15,8 @@ Một bộ lượng tử đều với rất ít mức phải chọn một scale 
 
 Nhân một vector $w \in \mathbb{R}^n$ với một ma trận trực giao "trộn đều" như Hadamard chuẩn hóa $H_n$ cho ra $u = H_n w$ với mỗi thành phần $u_j = \frac{1}{\sqrt{n}}\sum_i \pm w_i$. Theo định lý giới hạn trung tâm, mỗi $u_j$ là tổng có dấu của nhiều thành phần, nên phân phối của $u$ tiến gần Gauss và các outlier bị "trải mỏng" ra toàn bộ block. Thí nghiệm ở [Lab 6](../experiments_deep_dive/exp_6_prism_codecs_lab) với trọng số Student-t bậc 3: kurtosis giảm từ khoảng 330 xuống 3.6, sai số ternary tối ưu giảm từ 0.560 xuống 0.422. Dấu ngẫu nhiên $S$ được thêm vào để phá vỡ mọi cấu trúc tương quan giữa vector và các hàng cố định của $H_n$.
 
+Cùng nguyên lý này cũng được mainline llama.cpp dùng ở một chỗ khác, độc lập với Bonsai: khi KV Cache bị lượng tử, `llama_kv_cache` tự xoay Q, K, V bằng một ma trận Hadamard sinh bởi `ggml_gen_hadamard` (`src/llama-kv-cache.cpp`), có thể tắt bằng biến môi trường `LLAMA_ATTN_ROT_DISABLE` (xem [Theory 4](theory_4_kv_cache_quantization)). Điểm khác biệt: ở KV Cache phép xoay được áp dụng và hoàn nguyên hoàn toàn trong runtime, còn ở Bonsai 2 phép xoay được fold vào trọng số lưu trên đĩa.
+
 ---
 
 ## Phần 2: Toán học của phép fold
